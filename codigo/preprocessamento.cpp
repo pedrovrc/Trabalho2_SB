@@ -45,6 +45,14 @@ void preprocessamento(string nome_arquivo) {
             label_flag = 0;
         }
 
+        // checa por linha vazia
+        i = 0;
+        while (i < int(line.length()) && isspace(line[i])) {
+            i++;
+        }
+        if (i >= int(line.length()))
+            continue;   // ignora linha vazia
+
         // checa por SECTION
         if (line.find("SECTION") != string::npos) {
             if (line.find("TEXT") != string::npos) {
