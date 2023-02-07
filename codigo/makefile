@@ -7,17 +7,14 @@ CC = g++
 CFLAGS  = -g -Wall
 
 # The build target 
-main: main.o preprocessamento.o macros.o tradutor.o
-	$(CC) $(CFLAGS) -o montador main.o preprocessamento.o macros.o tradutor.o
+main: main.o preprocessamento.o tradutor.o
+	$(CC) $(CFLAGS) -o montador main.o preprocessamento.o tradutor.o
 
-main.o: main.cpp preprocessamento.h macros.h tradutor.h
+main.o: main.cpp preprocessamento.h tradutor.h
 	$(CC) $(CFLAGS) -c main.cpp
 
 preprocessamento.o: preprocessamento.h
 	$(CC) $(CFLAGS) -c preprocessamento.cpp preprocessamento.h
-
-macros.o: macros.h
-	$(CC) $(CFLAGS) -c macros.cpp macros.h
 
 tradutor.o: tradutor.h
 	$(CC) $(CFLAGS) -c tradutor.cpp tradutor.h

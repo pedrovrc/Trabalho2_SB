@@ -28,23 +28,29 @@ void preprocessamento(string nome_arquivo) {
     string line;
     string var_name;
     string var_value;
+    string str_label;
     string names[EQU_QUANT];
     string values[EQU_QUANT];
     char aux;
     int i, pos;
     int count_EQU = 0;
     int section_flag = 0;
+    int label_flag = 0;
 
     // loop para leitura e escrita
     while (!(codigo_base.eof())) {
-        getline(codigo_base, line);
+        if (label_flag == 0) {
+            getline(codigo_base, line);
+        } else {
+            label_flag = 0;
+        }
 
         // checa por SECTION
         if (line.find("SECTION") != string::npos) {
             if (line.find("TEXT") != string::npos) {
                 section_flag++;
             }
-            continue;
+            continue;   // nao inclui linha
         }
 
         // retira comentario
@@ -55,16 +61,77 @@ void preprocessamento(string nome_arquivo) {
                 i++;
             }
             if (line[i] == ';') {   // comentario de linha inteira
-                continue;
-
+                continue;           // nao inclui linha
             } else {                // comentario inline
                 i = 0;
                 while(line[i] != ';') {
                     i++;
                 }
-                if (line[i] == ';') {
+                if (line[i] == ';') {   // apaga comentario
                     line.erase(i, string::npos);
                 }
+            }
+        }
+
+        // retira espacos desnecessarios
+        i = 0;
+        while (i < line.length()) {
+            // retira espacos iniciais
+            if (i == 0 && isspace(line[i])) {
+                do {
+                    line.erase(i, 1);
+                } while (isspace(line[i]));
+                continue;
+            }
+
+            if (!(isspace(line[i]))) {      // caracter nao e espaco
+                // pula palavra
+                while (!(isspace(line[i])) && i < line.length()) {
+                    i++;
+                }
+                if (i == line.length()) {   // chegou ao fim e nao e espaco no fim
+                    continue;
+                }
+            } else {                        // caracter e espaco
+                // apaga espacos a mais
+                do {
+                    line.erase(i, 1);
+                } while (isspace(line[i]));
+                if (i < line.length()) {
+                    line.insert(i, " ");
+                    i++;
+                }
+            }
+
+            // apaga espaco no final da linha
+            if (i == (line.length() - 1) && isspace(line[i])) {
+                line.erase(i, 1);
+                continue;
+            }
+        }
+
+        // retira Label + Enter
+        if (line.find(':') != string::npos) {   // achou label
+            i = int(line.find(':')) + 1;
+            while (isspace(line[i]) && i < line.length()) {
+                i++;
+            }
+
+            if (i == line.length()) {   // label sozinha na linha
+                // apaga espaco no final da linha
+                i = int(line.find(':')) + 1;
+                while (i < (line.length())) {
+                    line.erase(i, 1);
+                }
+                // salva label e adiciona espaco
+                str_label = line;
+                str_label.append(" ");
+                // adiciona label na proxima linha
+                getline(codigo_base, line);
+                line.insert(0, str_label);
+
+                label_flag = 1;
+                continue;
             }
         }
 

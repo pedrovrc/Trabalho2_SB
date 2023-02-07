@@ -308,7 +308,6 @@ void tradutor()
         cout << resultado[i] << " ";
         saida << resultado[i] << " ";
     }
-    cout << endl;
 
     codigo_base.close();
 }
