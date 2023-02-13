@@ -7,6 +7,80 @@ void instrINPUT(string label, int size)
 
 }
 //---------------------------------------
+// OUTPUT
+void instrOUTPUT(string label) {
+    cout << "push " << label << endl;
+    cout << "call _OUTPUT" << endl;
+    cout << "add esp,4" << endl;
+}
+
+void functOUTPUT() {
+    cout << "_OUTPUT:" << endl;
+    cout << "enter 20, 0" << endl;
+    cout << "push ebx" << endl;
+    cout << "push ecx" << endl;
+    cout << "push edx" << endl;
+    cout << "mov BYTE [ebp-15], 0" << endl;
+    cout << "cmp DWORD [ebp+8], 0" << endl;
+    cout << "jl negativo" << endl;
+    cout << "mov BYTE [ebp-14], 0" << endl;
+    cout << "jmp div_start" << endl;
+    cout << "negativo: mov BYTE [ebp-14], '-'" << endl;
+    cout << "mov DWORD [ebp-20], 0" << endl;
+    cout << "mov eax, [ebp+8]" << endl;
+    cout << "sub [ebp-20], eax" << endl;
+    cout << "mov eax, [ebp-20]" << endl;
+    cout << "mov [ebp+8], eax" << endl;
+    cout << "div_start: mov eax, [ebp+8]" << endl;
+    cout << "div_loop: mov edx, 0" << endl;
+    cout << "mov ecx, 10" << endl;
+    cout << "div ecx" << endl;
+    cout << "mov [ebp-20], dl" << endl;
+    cout << "add DWORD [ebp-20], 0x30" << endl;
+    cout << "mov edx, 0" << endl;
+    cout << "mov dl, [ebp-15]" << endl;
+    cout << "not edx" << endl;
+    cout << "add edx, 1" << endl;
+    cout << "mov ecx, 0" << endl;
+    cout << "mov cl, [ebp-20]" << endl;
+    cout << "mov ebx, ebp" << endl;
+    cout << "sub ebx, 4" << endl;
+    cout << "mov [ebx + edx], cl" << endl;
+    cout << "inc BYTE [ebp-15]" << endl;
+    cout << "cmp eax, 0" << endl;
+    cout << "ja div_loop" << endl;
+    cout << "cmp BYTE [ebp-14], 0" << endl;
+    cout << "je chamada" << endl;
+    cout << "treat_neg: mov edx, 0" << endl;
+    cout << "mov dl, [ebp-15]" << endl;
+    cout << "not edx" << endl;
+    cout << "add edx, 1" << endl;
+    cout << "mov ecx, 0" << endl;
+    cout << "mov cl, '-'" << endl;
+    cout << "mov ebx, ebp" << endl;
+    cout << "sub ebx, 4" << endl;
+    cout << "mov [ebx + edx], cl" << endl;
+    cout << "inc BYTE [ebp-15]" << endl;
+    cout << "chamada: mov ecx, 0" << endl;
+    cout << "mov cl, [ebp-15]" << endl;
+    cout << "sub cl, 1" << endl;
+    cout << "mov ebx, ebp" << endl;
+    cout << "sub ebx, 4" << endl;
+    cout << "sub ebx, ecx" << endl;
+    cout << "mov ecx, ebx" << endl;
+    cout << "mov eax, 0" << endl;
+    cout << "mov al, [ebp-15]" << endl;
+    cout << "mov edx, eax" << endl;
+    cout << "mov ebx, 1" << endl;
+    cout << "mov eax, 4" << endl;
+    cout << "int 0x80" << endl;
+    cout << "pop edx" << endl;
+    cout << "pop ecx" << endl;
+    cout << "pop ebx" << endl;
+    cout << "leave" << endl;
+    cout << "ret" << endl;
+}
+
 // OUTPUT_C
 void instrOUTPUT_C(string label)
 {
