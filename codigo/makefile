@@ -8,7 +8,7 @@ CFLAGS  = -g -Wall
 
 # The build target 
 main: main.o preprocessamento.o tradutor.o
-	$(CC) $(CFLAGS) -o montador main.o preprocessamento.o tradutor.o
+	$(CC) $(CFLAGS) -o tradutor main.o preprocessamento.o tradutor.o
 
 main.o: main.cpp preprocessamento.h tradutor.h
 	$(CC) $(CFLAGS) -c main.cpp
