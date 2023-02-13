@@ -3,6 +3,8 @@
 #include "tradutor.h"
 using namespace std;
 
+// CONSIDERA-SE ECX COMO ACUMULADOR UNICO
+
 ofstream saida;
 
 // INPUT
@@ -195,27 +197,34 @@ void instrSUB(string label)
 // MUL
 void instrMUL(string label)
 {
-    cout << "mov eax, " << label << endl;
-    cout << "mul ecx" << endl;
+    cout << "mov eax, ecx" << endl;
+    cout << "mov ecx, " << label << endl;
+    cout << "imul ecx" << endl;
     cout << "mov ecx, eax" << endl;
 }
 // DIV
 void instrDIV(string label)
 {
-    cout << "mov eax, " << label << endl;
+    cout << "mov eax, ecx" << endl;
+    cout << "mov edx, 0" << endl;
+    cout << "mov ecx, " << label << endl;
     cout << "cbw" << endl;
-    cout << "idiv cl" << endl;
-    cout << "mov ecx, al" << endl;
+    cout << "cmp eax, 0" << endl;
+    cout << "jge div" << endl;
+    cout << "mov edx, 0" << endl;
+    cout << "not edx" << endl;
+    cout << "idiv ecx" << endl;
+    cout << "mov ecx, eax" << endl;
 }
 // LOAD
 void instrLOAD(string label)
 {
-    cout << "mov ecx," << label << endl;
+    cout << "mov ecx, [" << label << "]" << endl;
 }
 // STORE
 void instrSTORE(string label)
 {
-    cout << "mov " << label << ",ecx" << endl;
+    cout << "mov [" << label << "] ,ecx" << endl;
 }
 // JMP
 void instrJMP(string label)
@@ -225,23 +234,26 @@ void instrJMP(string label)
 // JMPN
 void instrJMPN(string label)
 {
-    cout << "jmpn " << label << endl;
+    cout << "cmp ecx, 0" << endl;
+    cout << "jl " << label << endl;
 }
 // JMPP
 void instrJMPP(string label)
 {
-    cout << "jmpp " << label << endl;
+    cout << "cmp ecx, 0" << endl;
+    cout << "jg " << label << endl;
 }
 // JMZ
 void instrJMPZ(string label)
 {
-    cout << "jmpz " << label << endl;
+    cout << "cmp ecx, 0" << endl;
+    cout << "je " << label << endl;
 }
 // COPY
 void instrCOPY(string label1, string label2)
 {
-    cout << "mov ecx," << label2 << endl;
-    cout << "mov " << label1 << ",ecx" << endl;
+    cout << "mov ecx, [" << label2 << "]" << endl;
+    cout << "mov [" << label1 << "] ,ecx" << endl;
 }
 // STOP
 void instrSTOP(string label)
@@ -291,7 +303,7 @@ void tradutor()
 {
     fstream codigo_base;
 
-    codigo_base.open(, fstream::in);
+    codigo_base.open("preproc.pre", fstream::in);
     saida.open("saida.o");
 
     Simbolo temp;
@@ -445,7 +457,7 @@ void tradutor()
         }
     }
 
-    fucntINPUT();
+    functINPUT();
     functOUTPUT();
     functINPUT_C();
     functOUTPUT_C();
