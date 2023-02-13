@@ -3,315 +3,398 @@
 #include "tradutor.h"
 using namespace std;
 
-bool invalido(string token)
+ofstream saida;
+
+// INPUT
+void instrINPUT(string label, int size)
 {
-    if (regex_match(token, regex("^-\\d+$")))
-        return false;
-    if (regex_match(token, regex("^\\d+\\D+")))
-        return true;
-    if (regex_match(token, regex("^\\W+\\w+")))
-        return true;
-    return false;
+
+}
+void functINPUT()
+{
+    
+}
+// OUTPUT
+void instrOUTPUT(string label, int size)
+{
+
+}
+void functOUTPUT()
+{
+
+}
+//---------------------------------------
+// OUTPUT_C
+void instrOUTPUT_C(string label)
+{
+    cout << "push " << label << endl;
+    cout << "call _OUTPUT_C" << endl;
+    cout << "add esp, 4" << endl;
 }
 
-void parser()
+void functOUTPUT_C()
 {
-    fstream codigo_base;
+    cout << "_OUTPUT_C:" << endl;
+    cout << "enter 0, 0" << endl;
+    cout << "push ecx" << endl;
+    cout << "mov ecx, [ebp+8]" << endl;
+    cout << "mov edx, 1" << endl;
+    cout << "mov ebx, 1" << endl;
+    cout << "mov eax, 4" << endl;
+    cout << "int 0x80" << endl;
+    cout << "pop ecx" << endl;
+    cout << "leave" << endl;
+    cout << "ret" << endl;
+}
 
-    codigo_base.open("macros.mcr", fstream::in);
+// OUTPUT_S
+void instrOUTPUT_S(string label, string len)
+{
+    cout << "push " << label << endl;
+    cout << "push " << len << endl;
+    cout << "call _OUTPUT_S" << endl;
+    cout << "add esp, 8" << endl;
+}
 
-    token temp;
-    vector<token> words;
-    string word, line;
-    int linha = 1;
+void functOUTPUT_S()
+{
+    cout << "_OUTPUT_S:" << endl;
+    cout << "enter 0, 0" << endl;
+    cout << "push ecx" << endl;
+    cout << "mov ecx, [ebp+8]" << endl;
+    cout << "mov edx, 1" << endl;
+    cout << "mov ebx, 1" << endl;
+    cout << "mov eax, 4" << endl;
+    cout << "int 0x80" << endl;
+    cout << "pop ecx" << endl;
+    cout << "leave" << endl;
+    cout << "ret" << endl;
+}
+//----------------------------------------------
+// INPUT_C
+void instrINPUT_C(string label)
+{
+    cout << "push " << label << endl;
+    cout << "call _INPUT_C" << endl;
+    cout << "add esp, 4" << endl;
+}
 
-    while (getline(codigo_base, line))
+void functINPUT_C()
+{
+    cout << "_INPUT_C:" << endl;
+    cout << "enter 0, 0" << endl;
+    cout << "push ecx" << endl;
+    cout << "mov ecx, [ebp+8]" << endl;
+    cout << "mov edx, 1" << endl;
+    cout << "mov ebx, 0" << endl;
+    cout << "mov eax, 3" << endl;
+    cout << "int 0x80" << endl;
+    cout << "pop ecx" << endl;
+    cout << "leave" << endl;
+    cout << "ret" << endl;
+}
+
+// INPUT_S
+void instrINPUT_S(string label, string len)
+{
+    cout << "push " << label << endl;
+    cout << "push " << len << endl;
+    cout << "call _INPUT_S" << endl;
+    cout << "add esp, 8" << endl;
+}
+
+void functINPUT_S()
+{
+    cout << "_INPUT_S:" << endl;
+    cout << "enter 0, 0" << endl;
+    cout << "push ecx" << endl;
+    cout << "mov ecx, [ebp+8]" << endl;
+    cout << "mov edx, 1" << endl;
+    cout << "mov ebx, 0" << endl;
+    cout << "mov eax, 3" << endl;
+    cout << "int 0x80" << endl;
+    cout << "pop ecx" << endl;
+    cout << "leave" << endl;
+    cout << "ret" << endl;
+}
+//-------------------------------------------
+// ADD
+void instrADD(string label)
+{
+    cout << "add ecx," << label << endl;
+}
+// SUB
+void instrSUB(string label)
+{
+    cout << "sub ecx," << label << endl;
+}
+// MUL
+void instrMUL(string label)
+{
+    cout << "mov eax, " << label << endl;
+    cout << "mul ecx" << endl;
+    cout << "mov ecx, eax" << endl;
+}
+// DIV
+void instrDIV(string label)
+{
+    cout << "mov eax, " << label << endl;
+    cout << "cbw" << endl;
+    cout << "idiv cl" << endl;
+    cout << "mov ecx, al" << endl;
+}
+// LOAD
+void instrLOAD(string label)
+{
+    cout << "mov ecx," << label << endl;
+}
+// STORE
+void instrSTORE(string label)
+{
+    cout << "mov " << label << ",ecx" << endl;
+}
+// JMP
+void instrJMP(string label)
+{
+    cout << "jmp " << label << endl;
+}
+// JMPN
+void instrJMPN(string label)
+{
+    cout << "jmpn " << label << endl;
+}
+// JMPP
+void instrJMPP(string label)
+{
+    cout << "jmpp " << label << endl;
+}
+// JMZ
+void instrJMPZ(string label)
+{
+    cout << "jmpz " << label << endl;
+}
+// COPY
+void instrCOPY(string label1, string label2)
+{
+    cout << "mov ecx," << label2 << endl;
+    cout << "mov " << label1 << ",ecx" << endl;
+}
+// STOP
+void instrSTOP(string label)
+{
+    cout << "mov eax,1" << endl;
+    cout << "mov ebx,0" << endl;
+    cout << "int 80h" << endl;
+}
+// CONST
+void instrCONST(string line)
+{
+    smatch var;
+    string label, arg;
+    if(regex_match(line, regex(".+\\d")))
     {
-        istringstream iss(line);
-        while (iss >> word)
-        {
-            temp.linha = linha;
-            temp.word = word;
-            words.push_back(temp);
-        }
-        linha++;
+        label = regex_replace(line, regex(":.+$"), "$2");
+        arg = regex_replace(line, regex("\\D+"), "$2");
+        cout << label << " dd " << arg << endl;
     }
-
-    for (int i = 0; i < (int)words.size(); i++)
-        if (invalido(words[i].word))
-            cout << "Erro lexico na linha " << words[i].linha << " :" << words[i].word << endl;
-
-    codigo_base.close();
+    else
+    {
+        label = regex_replace(line, regex(":.+$"), "$2");
+        arg = regex_replace(line, regex(".+ "), "$2");
+        cout << label << " db " << arg << endl;
+    }
 }
-
-bool label(string word)
+// SPACE
+void instrSPACE(string line)
 {
-    if (regex_match(word, regex("\\w+:$")))
-        return true;
-    return false;
-}
-
-int instrucao(string token)
-{
-    if (token == "ADD")
-        return 1;
-    else if (token == "SUB")
-        return 2;
-    else if (token == "MUL")
-        return 3;
-    else if (token == "DIV")
-        return 4;
-    else if (token == "JMP")
-        return 5;
-    else if (token == "JMPN")
-        return 6;
-    else if (token == "JMPP")
-        return 7;
-    else if (token == "JMPZ")
-        return 8;
-    else if (token == "COPY")
-        return 9;
-    else if (token == "LOAD")
-        return 10;
-    else if (token == "STORE")
-        return 11;
-    else if (token == "INPUT")
-        return 12;
-    else if (token == "OUTPUT")
-        return 13;
-    else if (token == "STOP")
-        return 14;
-    return 0;
-}
-
-int diretiva(string token)
-{
-    if (token == "SPACE")
-        return 1;
-    else if (token == "CONST")
-        return 2;
-    else if (token == "SECTION")
-        return 3;
-    else if (token == "DATA")
-        return 4;
-    else if (token == "TEXT")
-        return 5;
-    return 0;
+    smatch var;
+    if(regex_match(line, var, regex("^.+\\d+$")))
+    {   
+                string label, size;
+                label = regex_replace(line, regex(":.*"), "$2");
+                size = regex_replace(line, regex(".+\\+"), "$2");
+                cout << label << ": resd " << size << endl;
+    }
+    else
+    {
+        string label;
+        label = regex_replace(line, regex(":.*"), "$2");
+        cout << label << ": resd 1" << endl;
+    }
 }
 
 void tradutor()
 {
     fstream codigo_base;
 
-    codigo_base.open("macros.mcr", fstream::in);
-
-    Simbolo temp;
-    vector<Simbolo> words;
-    string word, line;
-    int linha = 1;
-    int pos = 0;
-    bool lastWordSpace = false;
-
-    while (getline(codigo_base, line))
-    {
-        istringstream iss(line);
-        while (iss >> word)
-        {
-            if (label(word))
-            {
-                // temp.word = word;
-                temp.word = regex_replace(word, regex(":"), "$2");
-                temp.linha = linha;
-                temp.pos = pos;
-                words.push_back(temp);
-                pos--;
-            }
-            else if (regex_match(word, regex("^SPACE$")))
-            {
-                lastWordSpace = true;
-            }
-            else if (regex_match(word, regex("^CONST$")))
-                pos--;
-            else if (regex_match(word, regex("\\w+,\\w+"))) // caso sejam duas variaveis
-                pos++;
-            // else if (regex_match(word, regex("[A-Z]+\\+\\d+"))) // CASO X+2
-            else if (lastWordSpace && !regex_match(word, regex("^\\d+")))
-                lastWordSpace = false;
-            else if (lastWordSpace && regex_match(word, regex("^\\d+"))) // CASO SPACE 10
-                pos += (stoi(word)) - 1;
-            pos++;
-        }
-        linha++;
-    }
-    // aqui temos a tabela de simbolos completa
-
-    // reset stream
-    codigo_base.close();
-    codigo_base.open("macros.mcr", fstream::in);
-
-    vector<int> resultado;
-    lastWordSpace = false;
-    bool lastWordSConst = false;
-    bool lastWordLabel = false;
-    linha = 0;
-
-    while (getline(codigo_base, line))
-    {
-        linha++;
-        istringstream iss(line);
-        while (iss >> word)
-        {
-            if ((lastWordSConst || lastWordSpace) && !regex_match(word, regex("^\\d+$")))
-            {
-                lastWordSConst = false;
-                lastWordSpace = false;
-            }
-
-            if (lastWordLabel && !label(word))
-            {
-                lastWordLabel = false;
-            }
-            
-            if (instrucao(word))
-            {
-                int temp = instrucao(word);
-                resultado.push_back(temp);
-                
-            }
-            else if (diretiva(word))
-            {
-                if (diretiva(word) == 1) // SPACE
-                {
-                    lastWordSpace = true;
-                    resultado.push_back(0);
-                }
-                else if (diretiva(word) == 2)
-                {
-                    lastWordSConst = true;
-                }
-            }
-            else if (label(word))
-            {
-                if (lastWordLabel)
-                    cout << "Erro semantico na linha " << linha << ": Mais de um label na linha" << endl;
-                lastWordLabel = true;
-            }
-            else if (regex_match(word, regex("^\\d+$"))) // numero
-            {
-                if (lastWordSConst)
-                {
-                    // escreve o numero word
-                    resultado.push_back(stoi(word));
-                }
-                else if (lastWordSpace)
-                {
-                    resultado.pop_back();
-                    // escreve 0 word vezes
-                    for (int i = 0; i < stoi(word); i++)
-                    {
-                        resultado.push_back(0);
-                    }
-                }
-            }
-
-            else // variavel
-            {
-                if (regex_match(word, regex("^\\w+\\+\\d+$"))) // caso L1+10
-                {
-                    // escreve words[word].pos+n
-                    string temp1 = regex_replace(word, regex("\\+\\d+$"), "$2");
-                    int temp2 = stoi(regex_replace(word, regex("^\\w+\\+"), "$2"));
-
-                    bool encontrado = false;
-                    for (int i = 0; i < (int)words.size(); i++)
-                    {
-                        if (words[i].word == temp1)
-                        {
-                            resultado.push_back(words[i].pos + temp2);
-                            encontrado = true;
-                        }
-                    }
-                    if (!encontrado)
-                    {
-                        // erro de label nao declarado
-                        cout << "Erro semantico na linha " << linha << ": Rotulo nao definido" << endl;
-                    }
-                }
-                else if (regex_match(word, regex("^\\w+\\,\\w+$"))) // caso L1,L2
-                {
-                    // escreve o l1.pos da tabela de simbolos e l2.pos da tabela de simbolos
-                    string temp1 = regex_replace(word, regex(",\\w+$"), "$2");
-                    string temp2 = regex_replace(word, regex(",\\w+$"), "$2");
-
-                    bool encontrado = false;
-                    for (int i = 0; i < (int)words.size(); i++)
-                    {
-                        if (words[i].word == temp1)
-                        {
-                            resultado.push_back(words[i].pos);
-                            encontrado = true;
-                        }
-                    }
-                    if (!encontrado)
-                    {
-                        // erro de label nao declarado
-                        cout << "Erro semantico na linha " << linha << endl;
-                    }
-
-                    encontrado = false;
-                    for (int i = 0; i < (int)words.size(); i++)
-                    {
-                        if (words[i].word == temp2)
-                        {
-                            resultado.push_back(words[i].pos);
-                            encontrado = true;
-                        }
-                    }
-                    if (!encontrado)
-                    {
-                        // erro de label nao declarado
-                        cout << "Erro semantico na linha " << linha << endl;
-                    }
-                    else
-                    {
-                            cout << "Erro semantico na linha " << linha << ": numero errado de argumentos" << endl;
-                    }
-                    
-                }
-                else // variavel padrao
-                {
-                    bool encontrado = false;
-                    for (int i = 0; i < (int)words.size(); i++)
-                    {
-                        if (words[i].word == word)
-                        {
-                            resultado.push_back(words[i].pos);
-                            encontrado = true;
-                        }
-                    }
-                    if (!encontrado)
-                    {
-                        // erro de label nao declarado
-                        cout << "Erro semantico na linha " << linha << endl;
-                    }
-                }
-            }
-        }
-    }
-
-    ofstream saida;
+    codigo_base.open(, fstream::in);
     saida.open("saida.o");
 
-    for (int i = 0; i < (int)resultado.size(); i++)
-    {
+    Simbolo temp;
+    string line, word;
+    smatch var;
+    vector<string> consts, spaces;
 
-        cout << resultado[i] << " ";
-        saida << resultado[i] << " ";
+    cout << ".text" << endl;
+
+    while (getline(codigo_base, line))
+    {
+        if(regex_search(line,var,regex("ADD")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrADD(var[0]);
+        }
+        else if(regex_search(line,var,regex("SUB")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrSUB(var[0]);
+        }
+        else if(regex_search(line,var,regex("MUL")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrMUL(var[0]);
+        }
+        else if(regex_search(line,var,regex("DIV")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrDIV(var[0]);
+        }
+        else if(regex_search(line,var,regex("JMP")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrJMP(var[0]);
+        }
+        else if(regex_search(line,var,regex("JMPN")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrJMPN(var[0]);
+        }
+        else if(regex_search(line,var,regex("JMPP")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrJMPP(var[0]);
+        }
+        else if(regex_search(line,var,regex("JMPZ")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrJMPZ(var[0]);
+        }
+        else if(regex_search(line,var,regex("COPY")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+),\\w+$"));
+            string str = var[1];
+            // regex_search(str,var,regex("(\\w+)"));
+            regex_search(line,var,regex("(\\w+$)"));
+            instrCOPY(str, var[0]);
+        }
+        else if(regex_search(line,var,regex("LOAD")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrLOAD(var[0]);
+        }
+        else if(regex_search(line,var,regex("STORE")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrSTORE(var[0]);
+        }
+        else if(regex_search(line,var,regex("INPUT")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrINPUT(var[0]);
+        }
+        else if(regex_search(line,var,regex("OUTPUT")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrOUTPUT(var[0]);
+        }
+        else if(regex_search(line,var,regex("INPUT_C")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrINPUT_C(var[0]);
+        }
+        else if(regex_search(line,var,regex("OUTPUT_C")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrOUTPUT_C(var[0]);
+        }
+        else if(regex_search(line,var,regex("INPUT_S")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+),\\d+$"));
+            string str = var[1];
+            // regex_search(str,var,regex("(\\w+)"));
+            regex_search(line,var,regex("(\\d+$)"));
+            instrINPUT_S(str, var[0]);
+        }
+        else if(regex_search(line,var,regex("OUTPUT_S")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+),\\d+$"));
+            string str = var[1];
+            // regex_search(str,var,regex("(\\w+)"));
+            regex_search(line,var,regex("(\\d+$)"));
+            instrOUTPUT_S(str, var[0]);
+        }
+        else if(regex_search(line,var,regex("STOP")))
+        {
+            // cout << var[0] << endl;
+            regex_search(line,var,regex("(\\w+$)"));
+            // cout << '[' << var[0] << ']' << endl;
+            instrSTOP(var[0]);
+        }
+        else if(regex_search(line,var,regex("CONST")))
+        {
+            consts.push_back(line);
+        }
+        else if(regex_search(line,var,regex("SPACE")))
+        {
+            spaces.push_back(line);
+        }
     }
 
-    codigo_base.close();
-}
+    fucntINPUT();
+    functOUTPUT();
+    functINPUT_C();
+    functOUTPUT_C();
+    functINPUT_S();
+    functOUTPUT_S();
 
-/*
-    Processa tradução e salva resultado num arquivo .o
-*/
+    cout << ".bss" << endl;
+    for (int i = 0; i < spaces.size(); i++)
+        instrSPACE(spaces[i]);
+    
+    cout << ".data" << endl;
+    for (int i = 0; i < consts.size(); i++)
+        instrSPACE(consts[i]);
+    codigo_base.close();
+    saida.close();
+}
