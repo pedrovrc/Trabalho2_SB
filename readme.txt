@@ -21,13 +21,6 @@ Passos para a compilação do programa:
     
 Para executar o programa, coloque o arquivo de entrada (com extensão .asm) no
 diretório "codigo" e então digite no terminal:
-    - ./montador <flag> <nome_arquivo>
+    - ./tradutor <nome_arquivo>
 em que:
-    <flag>          -p    - Executa somente pré-processamento.
-                            Gera um arquivo "preproc.pre".
-                    -m    - Executa pré-processamento e resolução de macros.
-                            Gera os arquivos "preproc.pre" e "macros.mcr".
-                    -o    - Executa pré-processamento, resolução de macros e tradução.
-                            Gera os arquivos "preproc.pre", "macros.mcr" e "saida.o".
-    
     <nome_arquivo>  - Nome do arquivo de código .asm, sem a extensão.
