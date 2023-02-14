@@ -346,14 +346,14 @@ void instrDIV(string label)
     saida << "cbw" << endl;
     cout << "cmp eax, 0" << endl;
     saida << "cmp eax, 0" << endl;
-    cout << "jge div" << endl;
-    saida << "jge div" << endl;
+    cout << "jge pos" << endl;
+    saida << "jge pos" << endl;
     cout << "mov edx, 0" << endl;
     saida << "mov edx, 0" << endl;
     cout << "not edx" << endl;
     saida << "not edx" << endl;
-    cout << "idiv ecx" << endl;
-    saida << "idiv ecx" << endl;
+    cout << "pos: idiv ecx" << endl;
+    saida << "pos: idiv ecx" << endl;
     cout << "mov ecx, eax" << endl;
     saida << "mov ecx, eax" << endl;
 }
