@@ -25,4 +25,4 @@ int instrucao(string token);
 
 int diretiva(string token);
 
-void tradutor();
+void tradutor(string nome_arquivo);
