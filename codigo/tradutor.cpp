@@ -470,11 +470,11 @@ void tradutor()
     smatch var;
     vector<string> consts, spaces;
 
-    cout << ".text" << endl;
-    saida << ".text" << endl;
+    cout << "section .text" << endl;
+    saida << "section .text" << endl;
     cout << "global _start" << endl;
-    cout << "global _start" << endl;
-    saida << "_start:" << endl;
+    saida << "global _start" << endl;
+    cout << "_start:" << endl;
     saida << "_start:" << endl;
 
     while (getline(codigo_base, line))
@@ -499,11 +499,6 @@ void tradutor()
             regex_search(line,var,regex("(\\w+$)"));
             instrDIV(var[0]);
         }
-        else if(regex_search(line,var,regex("JMP")))
-        {
-            regex_search(line,var,regex("(\\w+$)"));
-            instrJMP(var[0]);
-        }
         else if(regex_search(line,var,regex("JMPN")))
         {
             regex_search(line,var,regex("(\\w+$)"));
@@ -518,6 +513,11 @@ void tradutor()
         {
             regex_search(line,var,regex("(\\w+$)"));
             instrJMPZ(var[0]);
+        }
+        else if(regex_search(line,var,regex("JMP")))
+        {
+            regex_search(line,var,regex("(\\w+$)"));
+            instrJMP(var[0]);
         }
         else if(regex_search(line,var,regex("COPY")))
         {
@@ -595,12 +595,12 @@ void tradutor()
 
     cout << "section .bss" << endl;
     saida << "section .bss" << endl;
-    for (int i = 0; i < spaces.size(); i++)
+    for (int i = 0; i < int(spaces.size()); i++)
         instrSPACE(spaces[i]);
     
     cout << "section .data" << endl;
     saida << "section .data" << endl;
-    for (int i = 0; i < consts.size(); i++)
+    for (int i = 0; i < int(consts.size()); i++)
         instrCONST(consts[i]);
     codigo_base.close();
     saida.close();
