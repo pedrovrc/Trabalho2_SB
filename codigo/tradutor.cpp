@@ -284,7 +284,7 @@ void instrSPACE(string line)
     {   
                 string label, size;
                 label = regex_replace(line, regex(":.*"), "$2");
-                size = regex_replace(line, regex(".+\\+"), "$2");
+                size = regex_replace(line, regex("\\D+"), "$2");
                 saida << label << ": resd " << size << endl;
     }
     else
@@ -315,6 +315,13 @@ void tradutor(string nome_arquivo)
 
     while (getline(codigo_base, line))
     {
+        if(regex_search(line,var,regex(".+:")) && !regex_search(line,var,regex("SPACE")) && !regex_search(line,var,regex("CONST")))
+        {
+            string label;
+            label = regex_search(line,var,regex("(.+:)"));
+            saida<<var[1]<<endl;
+        }
+
         if(regex_search(line,var,regex("ADD")))
         {
             regex_search(line,var,regex("(\\w+$)"));
