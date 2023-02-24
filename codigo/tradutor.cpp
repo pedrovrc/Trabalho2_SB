@@ -10,7 +10,7 @@ ofstream saida;
 // INPUT
 void instrINPUT(string label)
 {
-
+    
 }
 void functINPUT()
 {
@@ -205,16 +205,12 @@ void instrMUL(string label)
 // DIV
 void instrDIV(string label)
 {
-    saida << "mov eax, ecx" << endl;
-    saida << "mov edx, 0" << endl;
-    saida << "mov ecx, " << label << endl;
+    saida << "mov ax, cx" << endl;
+    saida << "mov cx, " << label << endl;
     saida << "cbw" << endl;
-    saida << "cmp eax, 0" << endl;
-    saida << "jge pos" << endl;
-    saida << "mov edx, 0" << endl;
-    saida << "not edx" << endl;
-    saida << "pos: idiv ecx" << endl;
-    saida << "mov ecx, eax" << endl;
+    saida << "idiv cx" << endl;
+    saida << "mov ecx, 0" << endl;
+    saida << "mov cx, ax" << endl;
 }
 // LOAD
 void instrLOAD(string label)
@@ -277,7 +273,7 @@ void instrCONST(string line)
     {
         label = regex_replace(line, regex(":.+$"), "$2");
         arg = regex_replace(line, regex(".+ "), "$2");
-        saida << label << " db " << arg << endl;
+        saida << label << ": db " << arg << endl;
     }
 }
 // SPACE
@@ -377,16 +373,6 @@ void tradutor(string nome_arquivo)
             regex_search(line,var,regex("(\\w+$)"));
             instrSTORE(var[0]);
         }
-        else if(regex_search(line,var,regex("INPUT")))
-        {
-            regex_search(line,var,regex("(\\w+$)"));
-            instrINPUT(var[0]);
-        }
-        else if(regex_search(line,var,regex("OUTPUT")))
-        {
-            regex_search(line,var,regex("(\\w+$)"));
-            instrOUTPUT(var[0]);
-        }
         else if(regex_search(line,var,regex("INPUT_C")))
         {
             regex_search(line,var,regex("(\\w+$)"));
@@ -410,6 +396,16 @@ void tradutor(string nome_arquivo)
             string str = var[1];
             regex_search(line,var,regex("(\\d+$)"));
             instrOUTPUT_S(str, var[0]);
+        }
+        else if(regex_search(line,var,regex("INPUT")))
+        {
+            regex_search(line,var,regex("(\\w+$)"));
+            instrINPUT(var[0]);
+        }
+        else if(regex_search(line,var,regex("OUTPUT")))
+        {
+            regex_search(line,var,regex("(\\w+$)"));
+            instrOUTPUT(var[0]);
         }
         else if(regex_search(line,var,regex("STOP")))
         {
